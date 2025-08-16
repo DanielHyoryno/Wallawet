@@ -6,10 +6,9 @@ import { Button } from "@/components/ui/button";
 
 type Profile = {
   full_name: string | null;
-  currency: string | null;            // e.g., "IDR"
-  first_day_of_week: number | null;   // 0 = Sunday, 1 = Monday
-  timezone: string | null;            // e.g., "Asia/Jakarta"
-  locale: string | null;              // e.g., "id-ID"
+  currency: string | null;   // e.g., "IDR"
+  timezone: string | null;   // e.g., "Asia/Jakarta"
+  locale: string | null;     // e.g., "id-ID"
 };
 
 const TZ_DEFAULT = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -24,7 +23,6 @@ export default function SettingsPage() {
   const [p, setP] = useState<Profile>({
     full_name: "",
     currency: "IDR",
-    first_day_of_week: 1,
     timezone: TZ_DEFAULT,
     locale: LOC_DEFAULT,
   });
@@ -43,7 +41,7 @@ export default function SettingsPage() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name,currency,first_day_of_week,timezone,locale")
+        .select("full_name,currency,timezone,locale") // ← no first_day_of_week
         .eq("id", auth.user.id)
         .single();
 
@@ -53,7 +51,6 @@ export default function SettingsPage() {
         setP({
           full_name: data.full_name ?? "",
           currency: data.currency ?? "IDR",
-          first_day_of_week: data.first_day_of_week ?? 1,
           timezone: data.timezone ?? TZ_DEFAULT,
           locale: data.locale ?? LOC_DEFAULT,
         });
@@ -76,10 +73,9 @@ export default function SettingsPage() {
     }
 
     const payload = {
-      id: auth.user.id, // upsert requires id
+      id: auth.user.id,
       full_name: p.full_name || null,
       currency: p.currency || "IDR",
-      first_day_of_week: p.first_day_of_week ?? 1,
       timezone: p.timezone || TZ_DEFAULT,
       locale: p.locale || LOC_DEFAULT,
     };
@@ -95,7 +91,6 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Profile */}
       <Card className="border-emerald-700/40 bg-zinc-950/70 backdrop-blur text-zinc-100">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-zinc-300">Profile & Preferences</CardTitle>
@@ -128,19 +123,6 @@ export default function SettingsPage() {
                   <option value="USD">USD — US Dollar</option>
                   <option value="EUR">EUR — Euro</option>
                   <option value="JPY">JPY — Yen</option>
-                </select>
-              </div>
-
-              {/* First day of week */}
-              <div>
-                <label className="mb-1 block text-xs text-zinc-400">First day of week</label>
-                <select
-                  value={p.first_day_of_week ?? 1}
-                  onChange={(e) => setP({ ...p, first_day_of_week: Number(e.target.value) })}
-                  className="w-full rounded-md border border-zinc-800/80 bg-zinc-900/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value={1}>Monday</option>
-                  <option value={0}>Sunday</option>
                 </select>
               </div>
 
@@ -181,7 +163,6 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Account & Danger Zone (placeholders for later) */}
       <Card className="border-emerald-700/40 bg-zinc-950/70 backdrop-blur text-zinc-100">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-zinc-300">Account</CardTitle>
