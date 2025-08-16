@@ -1,0 +1,28 @@
+<!-- public/wallawet-logo.svg -->
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wallawet Logo">
+  <defs>
+    <!-- Emerald glow background -->
+    <radialGradient id="bg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="1"></stop>
+      <stop offset="60%" stop-color="#059669" stop-opacity="0.95"></stop>
+      <stop offset="100%" stop-color="#052e2b" stop-opacity="1"></stop>
+    </radialGradient>
+    <!-- Subtle inner shine for the W -->
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eafff7" stop-opacity="0.9"></stop>
+      <stop offset="100%" stop-color="#c7ffe9" stop-opacity="0.75"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded hex / chip -->
+  <path d="M132 64h248c38 0 68 30 68 68v248c0 38-30 68-68 68H132c-38 0-68-30-68-68V132c0-38 30-68 68-68z" fill="url(#bg)"></path>
+
+  <!-- Outer ring for depth -->
+  <path d="M132 64h248c38 0 68 30 68 68v248c0 38-30 68-68 68H132c-38 0-68-30-68-68V132c0-38 30-68 68-68z" fill="none" stroke="#10b981" stroke-opacity=".35" stroke-width="8"></path>
+
+  <!-- Stylized 'W' -->
+  <path d="M120 168l56 208 80-140 80 140 56-208h-52l-26 112-58-102-58 102-26-112h-52z" fill="url(#shine)"></path>
+
+  <!-- Soft bottom vignette -->
+  <ellipse cx="256" cy="380" rx="180" ry="26" fill="#000" opacity=".25"></ellipse>
+</svg>
