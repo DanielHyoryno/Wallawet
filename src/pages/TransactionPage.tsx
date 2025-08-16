@@ -5,16 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 
-type Category = { id: string; name: string; type: "expense" | "income"; color: string | null };
+type Category = { id: string; name: "expense" | "income" | string; type: "expense" | "income"; color: string | null };
 type Txn = {
   id: string;
   amount: number;
   occurred_on: string;
   note: string | null;
   category_id: string | null;
-  category: Category | null;   // object, not array
+  category: Category | null; // joined object
 };
-
 
 // --- helpers ---
 function todayLocalYMD() {
@@ -25,7 +24,7 @@ function todayLocalYMD() {
 }
 const idr = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" });
 
-// If your FK name differs, open Supabase → transactions → Foreign Keys and copy it.
+// If your FK name differs, copy it from Supabase → transactions → Foreign Keys
 const CATEGORY_FK = "transactions_category_id_fkey";
 
 export default function TransactionsPage() {
@@ -48,24 +47,31 @@ export default function TransactionsPage() {
       setLoading(true);
       setErr(null);
 
-    const [cRes, tRes] = await Promise.all([
-    supabase.from("categories").select("id,name,type,color").order("type").order("name"),
-    supabase
+      const cQuery = supabase
+        .from("categories")
+        .select("id,name,type,color")
+        .order("type")
+        .order("name")
+        .returns<Category[]>();
+
+      const tQuery = supabase
         .from("transactions")
-        .select<Txn>(`
-        id, amount, occurred_on, note, category_id,
-        category:categories!${CATEGORY_FK} ( id, name, type, color )
+        .select(`
+          id, amount, occurred_on, note, category_id,
+          category:categories!${CATEGORY_FK} ( id, name, type, color )
         `)
         .order("occurred_on", { ascending: false })
         .order("created_at", { ascending: false })
-        .limit(30),
-    ]);
+        .limit(30)
+        .returns<Txn[]>();
+
+      const [cRes, tRes] = await Promise.all([cQuery, tQuery]);
 
       if (cRes.error) setErr(cRes.error.message);
-      else setCats((cRes.data ?? []) as Category[]);
+      else setCats(cRes.data ?? []);
 
       if (tRes.error) setErr((prev) => prev ?? tRes.error!.message);
-      else setTx((tRes.data ?? []) as Txn[]);
+      else setTx(tRes.data ?? []);
 
       setLoading(false);
     })();
@@ -96,18 +102,17 @@ export default function TransactionsPage() {
   async function refreshList() {
     const { data, error } = await supabase
       .from("transactions")
-      .select(
-        `
+      .select(`
         id, amount, occurred_on, note, category_id,
         category:categories!${CATEGORY_FK} ( id, name, type, color )
-      `
-      )
+      `)
       .order("occurred_on", { ascending: false })
       .order("created_at", { ascending: false })
-      .limit(30);
+      .limit(30)
+      .returns<Txn[]>();
 
     if (error) return setErr(error.message);
-    setTx((data ?? []) as Txn[]);
+    setTx(data ?? []);
   }
 
   async function del(id: string) {
@@ -137,8 +142,8 @@ export default function TransactionsPage() {
         <CardContent>
           {!hasCats && (
             <p className="mb-3 text-sm text-amber-300">
-              You don’t have any categories yet. Create some in <span className="underline">Categories</span>.
-              You can still add “Uncategorized” entries for now.
+              You don’t have any categories yet. Create some in <span className="underline">Categories</span>. You can
+              still add “Uncategorized” entries for now.
             </p>
           )}
 
@@ -172,8 +177,7 @@ export default function TransactionsPage() {
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full rounded-md border border-zinc-800/80 bg-zinc-900/60 px-3 py-2 text-sm
-                           focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full rounded-md border border-zinc-800/80 bg-zinc-900/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">Uncategorized</option>
                 {cats.map((c) => (
@@ -236,10 +240,7 @@ export default function TransactionsPage() {
               {tx.map((r) => (
                 <li key={r.id} className="flex items-center justify-between py-3">
                   <div className="flex items-center gap-3">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: r.category?.color ?? "#10b981" }}
-                    />
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: r.category?.color ?? "#10b981" }} />
                     <div>
                       <div className="text-sm">
                         {r.category?.name ?? "Uncategorized"}
@@ -250,11 +251,7 @@ export default function TransactionsPage() {
                   </div>
 
                   <div className="flex items-center gap-4">
-                    <div
-                      className={`text-sm font-medium ${
-                        r.category?.type === "income" ? "text-emerald-300" : "text-zinc-100"
-                      }`}
-                    >
+                    <div className={`text-sm font-medium ${r.category?.type === "income" ? "text-emerald-300" : "text-zinc-100"}`}>
                       {idr.format(r.amount)}
                     </div>
                     <button
