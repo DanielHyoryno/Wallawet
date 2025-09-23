@@ -19,10 +19,9 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  // form state
   const [name, setName] = useState("");
   const [type, setType] = useState<"expense" | "income">("expense");
-  const [color, setColor] = useState("#10b981"); // emerald
+  const [color, setColor] = useState("#10b981"); 
 
   async function load() {
     setLoading(true);
@@ -64,7 +63,6 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Add form */}
       <Card className="border-emerald-700/40 bg-zinc-950/70 backdrop-blur text-zinc-100">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-zinc-300">Add Category</CardTitle>
@@ -104,7 +102,6 @@ export default function CategoriesPage() {
         </CardContent>
       </Card>
 
-      {/* List */}
       <Card className="border-emerald-700/40 bg-zinc-950/70 backdrop-blur text-zinc-100">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-zinc-300">Your Categories</CardTitle>

@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 
 type Profile = {
   full_name: string | null;
-  currency: string | null;   // e.g., "IDR"
-  timezone: string | null;   // e.g., "Asia/Jakarta"
-  locale: string | null;     // e.g., "id-ID"
+  currency: string | null;  
+  timezone: string | null; 
+  locale: string | null;    
 };
 
 const TZ_DEFAULT = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -41,7 +41,7 @@ export default function SettingsPage() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name,currency,timezone,locale") // ← no first_day_of_week
+        .select("full_name,currency,timezone,locale") 
         .eq("id", auth.user.id)
         .single();
 

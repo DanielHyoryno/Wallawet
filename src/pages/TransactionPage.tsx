@@ -12,10 +12,9 @@ type Txn = {
   occurred_on: string;
   note: string | null;
   category_id: string | null;
-  category: Category | null; // joined object
+  category: Category | null; 
 };
 
-// --- helpers ---
 function todayLocalYMD() {
   const now = new Date();
   const tz = now.getTimezoneOffset();
@@ -24,17 +23,14 @@ function todayLocalYMD() {
 }
 const idr = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" });
 
-// If your FK name differs, copy it from Supabase → transactions → Foreign Keys
 const CATEGORY_FK = "transactions_category_id_fkey";
 
 export default function TransactionsPage() {
-  // form
   const [amount, setAmount] = useState<string>("");
   const [date, setDate] = useState<string>(todayLocalYMD());
   const [note, setNote] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("");
 
-  // data
   const [cats, setCats] = useState<Category[]>([]);
   const [tx, setTx] = useState<Txn[]>([]);
   const [loading, setLoading] = useState(true);

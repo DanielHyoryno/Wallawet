@@ -26,7 +26,6 @@ export default function AuthPage() {
           <TabsList
             className="relative grid w-full grid-cols-2 rounded-xl border border-emerald-700/40 bg-transparent text-white"
           >
-            {/* sliding green pill */}
             <motion.div
               layout
               className="absolute inset-y-0 left-0 w-1/2 rounded-lg bg-emerald-600"
